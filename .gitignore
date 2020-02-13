@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+/VisualStudio/x64
+/VisualStudio/Release
+/VisualStudio/Debug
+/stage/DSBee.pdb
+/stage/DSBee.exp
+/stage/DSBee.ilk
+/stage/DSBee.iobj
+/stage/DSBee.ipdb
+/stage/DSBee.lib
+/VisualStudio/.vs

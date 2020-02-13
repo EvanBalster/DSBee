@@ -19,23 +19,31 @@ public:
 	// The number of samples per second.
 	float sampleRate = 48000.f;
 
-	float filter = 0.;
+	// State for some very simple filters.
+	float filter_1 = 0.f, filter_2 = 0.f;
 
 	// This is called at the start of our program. It's getting the sample rate from the audio card
 	void start(AudioInfo info) override
 	{
 		sampleRate = info.sampleRate;
+
+		// Reset our filters
+		filter_1 = 0.f;
+		filter_2 = 0.f;
 	}
 
 	// This is called once per audio sample.
 	float makeSample() override
 	{
-		// Pick a frequency
-		float frequency = (-5.f + 400.f * MOUSE_X);
+		// Pick an amplification factor.
+		float amp = 1.0f;
 
-		float amplitude = 1.0f;
+		// Pick a frequency, calculating it from a MIDI note.
+		float midiNote = 36.f + 60.f * MOUSE_X;
+		float frequency = MidiFrequency(midiNote);
 
-		float filter_alpha = std::pow(.001f, 1.0f - MOUSE_Y);
+		// Control our filters
+		float filter_alpha = std::pow(.01f, 1.0f - MOUSE_Y);
 
 		// Move our phase ahead proportional to frequency.
 		//    Wrap it around so it stays between 0 and 1.
@@ -57,13 +65,15 @@ public:
 
 		// Mix the synth and white noise together
 		float mix =
-			+ 0.50f * sawtooth
-			+ 0.50f * whiteNoise;
+			+ 0.70f * sawtooth
+			+ 0.20f * whiteNoise;
 
 		// A very simple filter
-		filter += (mix - filter) * filter_alpha;
+		filter_1 += (mix      - filter_1) * filter_alpha;
+		filter_2 += (filter_1 - filter_2) * filter_alpha;
 
-		return filter;
+		// Final result
+		return amp * filter_2;
 	}
 };
 

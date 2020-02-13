@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="dsbee">
+      <UniqueIdentifier>{560a9860-537f-4c26-a571-5e90b1e2c822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vst2_sdk">
+      <UniqueIdentifier>{b330e6ad-58d7-4b1d-8ac8-970f0d5d745f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dsbee\vst2">
+      <UniqueIdentifier>{cb85944b-50d7-4506-ae57-e23a0dba46a5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\dsbee\dsbee.h">
+      <Filter>dsbee</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dsbee\vst2\plugin.h">
+      <Filter>dsbee\vst2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vst2\public.sdk\source\vst2.x\aeffeditor.h">
+      <Filter>vst2_sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vst2\public.sdk\source\vst2.x\audioeffect.h">
+      <Filter>vst2_sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vst2\public.sdk\source\vst2.x\audioeffectx.h">
+      <Filter>vst2_sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\examples\utility.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\examples\example.cpp" />
+    <ClCompile Include="..\src\dsbee\vst2\plugin.cpp">
+      <Filter>dsbee\vst2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vst2\public.sdk\source\vst2.x\audioeffect.cpp">
+      <Filter>vst2_sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vst2\public.sdk\source\vst2.x\audioeffectx.cpp">
+      <Filter>vst2_sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vst2\public.sdk\source\vst2.x\vstplugmain.cpp">
+      <Filter>vst2_sdk</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

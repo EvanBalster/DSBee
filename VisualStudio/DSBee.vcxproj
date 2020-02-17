@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\examples\utility.h" />
-    <ClInclude Include="..\include\dsbee\dsbee.h" />
+    <ClInclude Include="..\src\dsbee\dsbee.h" />
     <ClInclude Include="..\src\dsbee\vst2\plugin.h" />
     <ClInclude Include="..\vst2\public.sdk\source\vst2.x\aeffeditor.h" />
     <ClInclude Include="..\vst2\public.sdk\source\vst2.x\audioeffect.h" />

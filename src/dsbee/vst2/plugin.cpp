@@ -180,14 +180,14 @@ float MOUSE_X = 0.f, MOUSE_Y = 0.f;
 //---------------------------------------------------------------------------
 void DSBeeEffect::processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames)
 {
-	float* in = inputs[0];
+	float* in1 = inputs[0];
 	float* out1 = outputs[0];
-	float* out2 = outputs[1];
+	//float* out2 = outputs[1];
 
 	MOUSE_X = program.pad_x;
 	MOUSE_Y = program.pad_y;
 
-	processor->process(outputs[0], sampleFrames);
+	processor->process(in1, out1, sampleFrames);
 
 	/*while (--sampleFrames >= 0)
 	{

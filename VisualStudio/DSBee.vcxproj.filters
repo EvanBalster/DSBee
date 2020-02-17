@@ -12,9 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\dsbee\dsbee.h">
-      <Filter>dsbee</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\dsbee\vst2\plugin.h">
       <Filter>dsbee\vst2</Filter>
     </ClInclude>
@@ -28,6 +25,9 @@
       <Filter>vst2_sdk</Filter>
     </ClInclude>
     <ClInclude Include="..\examples\utility.h" />
+    <ClInclude Include="..\src\dsbee\dsbee.h">
+      <Filter>dsbee</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\examples\example.cpp" />

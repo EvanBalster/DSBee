@@ -61,6 +61,7 @@ namespace dsbee
 	};
 
 	/*
+		The base class for DSBee processors.
 	*/
 	class Processor
 	{
@@ -69,7 +70,7 @@ namespace dsbee
 
 		virtual void start(AudioInfo info) = 0;
 
-		virtual void process(float *output, index_t count) = 0;
+		virtual void process(const float *input, float *output, index_t count) = 0;
 	};
 
 	Processor *GetProcessor();
@@ -86,11 +87,108 @@ namespace dsbee
 		*/
 		virtual float makeSample() = 0;
 
-		void process(float *output, index_t count) override
+		void process(const float *input, float *output, index_t count) override
 		{
 			for (index_t i = 0; i < count; ++i)
 			{
 				output[i] = makeSample();
+			}
+		}
+	};
+
+	/*
+		A very simple effect that produces samples one at a time.
+	*/
+	class Effect_OneByOne : public Processor
+	{
+	public:
+		/*
+			Override this method.
+		*/
+		virtual float processSample(const float input) = 0;
+
+		void process(const float *input, float *output, index_t count) override
+		{
+			for (index_t i = 0; i < count; ++i)
+			{
+				output[i] = processSample(input[i]);
+			}
+		}
+	};
+
+	/*
+		A chain of processors.
+	*/
+	class Chain : public Processor
+	{
+	private:
+		std::vector<Processor*> processors;
+		std::vector<float>      temporary[2];
+
+	public:
+		// virtual void process(Buses buses); // PLANNED
+
+		// Zero-length chain
+		Chain() {}
+
+		// Add processors
+		void add(Processor *processor)
+		{
+			processors.push_back(processor);
+		}
+
+		// Construct from an array
+		template<size_t Count>
+		Chain(Processor* (&array_of_processors)[Count])
+		{
+			for (Processor *processor : array_of_processors) add(processor);
+		}
+
+		~Chain()
+		{
+			// Delete all processors in the chain
+			while (processors.size())
+			{
+				delete processors.back();
+				processors.pop_back();
+			}
+		}
+
+		void start(AudioInfo info) override
+		{
+			for (size_t i = 0; i < processors.size(); ++i)
+			{
+				processors[i]->start(info);
+			}
+		}
+
+		void process(const float *input, float *output, index_t count) override
+		{
+			// Make our temporary buffers the same size as the
+			temporary[0].resize(count);
+			temporary[1].resize(count);
+			bool whichTemporary = false;
+
+			if (!processors.size())
+			{
+				// A zero-length chain should just copy input to output.
+				for (size_t i = 0; i < count; ++i) output[i] = input[i];
+
+				return;
+			}
+
+			for (size_t i = 0; i < processors.size(); ++i)
+			{
+				// Last stage of processing?
+				bool first = (i == 0), last = (i+1 == processors.size());
+
+				// Decide the input and output buffers for this step.
+				const float *stage_input  = (first ? input  : temporary[whichTemporary].data());
+				whichTemporary = !whichTemporary;
+				float       *stage_output = (last  ? output : temporary[whichTemporary].data());
+
+				// Run the sub-process.
+				processors[i]->process(stage_input, stage_output, count);
 			}
 		}
 	};

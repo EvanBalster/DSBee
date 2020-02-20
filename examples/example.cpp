@@ -175,7 +175,7 @@ public:
 		out[0] = out[1] + alpha * (last_two_avg - out[1]);
 
 		// Next sample, these will become the previous input and output.
-		in [1] = in [0];
+		in [1] = in[0];
 		out[1] = out[0];
 
 		// The current output

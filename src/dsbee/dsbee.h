@@ -4,10 +4,14 @@
 #include <string>
 #include <unordered_map>
 
+#include <plaid_midi2/midi2.h>
+
 
 namespace dsbee
 {
 	using index_t = ptrdiff_t;
+
+	using namespace midi2;
 
 #if 0
 	static inline const float PI = 3.1415926535f;
@@ -71,6 +75,8 @@ namespace dsbee
 		virtual void start(AudioInfo info) = 0;
 
 		virtual void process(const float *input, float *output, index_t count) = 0;
+
+		virtual void midiIn(const UMP &event)    {}
 	};
 
 	Processor *GetProcessor();
@@ -189,6 +195,14 @@ namespace dsbee
 
 				// Run the sub-process.
 				processors[i]->process(stage_input, stage_output, count);
+			}
+		}
+
+		void midiIn(const UMP &event) override
+		{
+			for (size_t i = 0; i < processors.size(); ++i)
+			{
+				processors[i]->midiIn(event);
 			}
 		}
 	};

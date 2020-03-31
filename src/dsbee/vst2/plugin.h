@@ -45,6 +45,10 @@ public:
 	DSBeeEffect (audioMasterCallback audioMaster);
 	~DSBeeEffect ();
 
+	virtual VstInt32 canDo (char* text);
+
+	VstInt32 processEvents (VstEvents* events);
+
 	//---from AudioEffect-----------------------
 	virtual void processReplacing (float** inputs, float** outputs, VstInt32 sampleFrames);
 

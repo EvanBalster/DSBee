@@ -1,5 +1,7 @@
 #include <dsbee/dsbee.h>
 
+#include <iostream>
+
 #include "utility.h" // useful stuff
 
 
@@ -7,16 +9,6 @@ using namespace dsbee;
 
 // Magic variables corresponding to mouse position
 extern float MOUSE_X, MOUSE_Y;
-
-/*
-	A rule for our frequency control.
-*/
-float pickFrequency()
-{
-	// Pick a frequency, calculating it from a MIDI note.
-	float midiNote = 36.f + 60.f * MOUSE_X;
-	return MidiFrequency(midiNote);
-}
 
 
 /*
@@ -30,6 +22,8 @@ public:
 
 	float sampleRate = 48000.f;
 
+	float last_midi_note = -1.0f;
+
 	// This is called at the start of our program. It's getting the sample rate from the audio card
 	void start(AudioInfo info) override
 	{
@@ -37,6 +31,33 @@ public:
 
 		// Reset our phase.
 		phase = 0.0f;
+	}
+
+	void midiIn(const UMP &event) override
+	{
+		// Does this Unviersal MIDI Packet contain a MIDI 1.0 voice message?
+		if (event.messageType() == UMP::MIDI1_CHANNEL_VOICE)
+		{
+			auto &midi = (const UMP::Midi1_ChannelVoice&) event;
+
+			// Note on?
+			if (midi.opcode() == UMP::ChannelVoice::NOTE_ON)
+			{
+				last_midi_note = midi.noteNumber();
+			}
+		}
+	}
+
+	// A rule for our frequency control.
+	float pickFrequency()
+	{
+		// MIDI note from controller if any, else from mouse
+		float midi_note = last_midi_note;
+		if (last_midi_note >= 0.0f) midi_note = last_midi_note;
+		else                        midi_note = 36.f + 60.f * MOUSE_X;
+
+		// Pick a frequency, calculating it from a MIDI note.
+		return MidiFrequency(midi_note);
 	}
 
 	// Call this once per sample to advance the oscillator
@@ -175,7 +196,7 @@ public:
 		out[0] = out[1] + alpha * (last_two_avg - out[1]);
 
 		// Next sample, these will become the previous input and output.
-		in [1] = in[0];
+		in [1] = in [0];
 		out[1] = out[0];
 
 		// The current output

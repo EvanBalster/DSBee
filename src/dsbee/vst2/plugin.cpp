@@ -7,6 +7,7 @@
 #include "plugin.h"
 
 #include <dsbee/dsbee.h>
+#include <plaid_midi2/midi2.h>
 
 //----------------------------------------------------------------------------- 
 DSBeeProgram::DSBeeProgram ()
@@ -43,6 +44,46 @@ DSBeeEffect::~DSBeeEffect ()
 		delete[] buffer;
 	if (programs)
 		delete[] programs;
+}
+
+VstInt32 DSBeeEffect::canDo(char* text)
+{
+	if (strcmp(text, "receiveVstMidiEvent")) return 1;
+
+	return 0;
+}
+
+VstInt32 DSBeeEffect::processEvents(VstEvents* events)
+{
+	using namespace midi2;
+	for (VstInt32 i = 0; i < events->numEvents; ++i)
+	{
+		const VstEvent *event = events->events[i];
+		switch (event->type)
+		{
+		case kVstMidiType:
+			{
+				auto midiEvent = (const VstMidiEvent*) event;
+
+				auto midiBytes = (const uint8_t*) midiEvent->midiData;
+
+				UMP packet = UMP(
+					(uint32_t(UMP::MIDI1_CHANNEL_VOICE) << 28) |
+					(uint32_t(midiBytes[0]) << 16) |
+					(uint32_t(midiBytes[1]) << 8) |
+					(uint32_t(midiBytes[2])));
+
+				UMP::CV1 &midi1Packet = reinterpret_cast<UMP::CV1&>(packet);
+
+				processor->midiIn(midi1Packet);
+			}
+			break;
+		case kVstSysExType:
+			break;
+		}
+	}
+
+	return 1;
 }
 
 //------------------------------------------------------------------------
